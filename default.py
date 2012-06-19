@@ -1,24 +1,25 @@
-import xbmcplugin
-import xbmcgui
 import xbmcaddon
 import sys
-import urllib, urllib2
-import re
+import os
 
 import helper
 
 
 addon = xbmcaddon.Addon(id='plugin.video.kidsplace')
+addonpath = xbmc.translatePath( addon.getAddonInfo('path') )
+
 
 channels = [
 ["hubworld.com","hubworld"],
 ["kidmango.com","kidmango"],
 ["nickjr.com","nickjr"],
+["zui.com","zui"],
 ]
 
 def mainPage():
 	for channel in channels:
-		helper.addDirectoryItem(channel[0],{"channel":channel[1]})
+		channelPic = os.path.join(addonpath,'resources','images',channel[1]+'.png')
+		helper.addDirectoryItem(channel[0],{"channel":channel[1]}, channelPic)
 	helper.endOfDirectory()
 
     
