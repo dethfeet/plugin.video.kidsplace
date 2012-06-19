@@ -4,6 +4,9 @@ import xbmcaddon
 import sys, re
 import urllib, urllib2
 
+from StringIO import StringIO
+import gzip
+
 thisPlugin = int(sys.argv[1])
 
 def load_page(url , proxy=False):
@@ -16,8 +19,16 @@ def load_page(url , proxy=False):
         urllib2.install_opener(opener)
     
     req = urllib2.Request(url)
+    req.add_header('Accept-encoding', 'gzip')
     response = urllib2.urlopen(req)
-    link = response.read()
+    
+    if response.info().get('Content-Encoding') == 'gzip':
+        buf = StringIO( response.read())
+        f = gzip.GzipFile(fileobj=buf)
+        link = f.read()
+    else:
+        link = response.read()
+    
     response.close()
     return link
 
