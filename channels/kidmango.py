@@ -1,5 +1,4 @@
-import xbmcplugin, xbmcgui
-import urllib, sys, re
+import urllib, re
 import helper
 
 thisChannel = "kidmango"

@@ -1,8 +1,6 @@
-import xbmcplugin, xbmcgui
-import urllib, sys, re
+import urllib, re
 import helper
 import json
-import pprint
 
 thisChannel = "nickjr"
 baseLink = "http://www.nickjr.com"

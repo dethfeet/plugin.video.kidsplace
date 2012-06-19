@@ -1,8 +1,4 @@
-import xbmcplugin
-import xbmcgui
-import sys
-import urllib
-import re
+import urllib, re
 import helper
 
 import brightcovePlayer
