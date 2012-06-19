@@ -39,8 +39,7 @@ def showVideos(feedUrl):
 	helper.endOfDirectory()
 
 def playVideo(link):
-    item = xbmcgui.ListItem(path=urllib.unquote(link))
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+	helper.setResolvedUrl(urllib.unquote(link))
 	
 params = helper.get_params()
 if len(params) == 1:

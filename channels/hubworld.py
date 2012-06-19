@@ -7,7 +7,6 @@ import helper
 
 import brightcovePlayer
 
-thisPlugin = int(sys.argv[1])
 
 thisChannel = "hubworld"
 
@@ -101,8 +100,7 @@ def playVideo(link):
     playpath = stream[1][stream[1].find("&") + 1:]
     finalurl = rtmpbase + ' playpath=' + playpath
     
-    item = xbmcgui.ListItem(stream[0], path=finalurl)
-    xbmcplugin.setResolvedUrl(thisPlugin, True, item)
+    helper.setResolvedUrl(finalurl)
 
 params = helper.get_params()
 if len(params) == 1:

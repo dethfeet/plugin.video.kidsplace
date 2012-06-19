@@ -65,8 +65,7 @@ def playVideo(link):
     
     streamUrl = streamUrl + " swfUrl=" + mediaPlayer + " swfVfy=1"
     
-    item = xbmcgui.ListItem(path=streamUrl)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+    helper.setResolvedUrl(streamUrl)
     
 params = helper.get_params()
 if len(params) == 1:

@@ -49,14 +49,28 @@ def removeHtmlSpecialChars(inputStr):
     return inputStr
 
 def addDirectoryItem(name, parameters={}, pic="", folder=True):
-    li = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=pic)
     if not folder:
+        li = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=pic)
         li.setProperty('IsPlayable', 'true')
+#		li.setInfo("video",{
+#            "size": link.size,
+#            "date": time.strftime("%d.%m.%Y",displayObject.date),
+#            "year": int(time.strftime("%Y",displayObject.date)),
+#            "title": title,
+#            "plot": transformHtmlCodes(displayObject.description),
+#            "duration": displayObject.duration
+#          }); 
+    else:
+        li = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=pic)
     url = sys.argv[0] + '?' + urllib.urlencode(parameters)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=folder)
 
 def endOfDirectory():
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def setResolvedUrl(streamUrl):
+    item = xbmcgui.ListItem(path=streamUrl)
+    xbmcplugin.setResolvedUrl(thisPlugin, True, item)
 
 def extractMrss(feed):
     extractItem = re.compile("<item>.*?</item>",re.DOTALL)
