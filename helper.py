@@ -12,11 +12,14 @@ thisPlugin = int(sys.argv[1])
 def load_page(url , proxy=False):
     print url
     if proxy == True:
-        us_proxy = "http://216.155.139.115:3128"
-        print 'Using proxy: ' + us_proxy
-        proxy_handler = urllib2.ProxyHandler({'http':us_proxy})
-        opener = urllib2.build_opener(proxy_handler)
-        urllib2.install_opener(opener)
+        proxy_address = xbmcplugin.getSetting(thisPlugin,'proxy_address')
+        proxy_port = xbmcplugin.getSetting(thisPlugin,'proxy_port')
+        if len(proxy_address):
+            us_proxy = "http://"+proxy_address+":"+proxy_port
+            print 'Using proxy: ' + us_proxy
+            proxy_handler = urllib2.ProxyHandler({'http':us_proxy})
+            opener = urllib2.build_opener(proxy_handler)
+            urllib2.install_opener(opener)
     
     req = urllib2.Request(url)
     req.add_header('Accept-encoding', 'gzip')
@@ -66,7 +69,7 @@ def addDirectoryItem(name, parameters={}, pic="", folder=True):
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=folder)
 
 def endOfDirectory():
-    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    xbmcplugin.endOfDirectory(thisPlugin)
 
 def setResolvedUrl(streamUrl):
     item = xbmcgui.ListItem(path=streamUrl)
