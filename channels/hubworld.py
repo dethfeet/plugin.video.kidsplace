@@ -1,18 +1,11 @@
 import xbmcplugin
 import xbmcgui
-import xbmcaddon
 import sys
-import urllib, urllib2
+import urllib
 import re
 import helper
 
-import httplib
-from pyamf import AMF0, AMF3
-
-from pyamf import remoting
-from pyamf.remoting.client import RemotingService
-
-addon = xbmcaddon.Addon(id='plugin.video.kidsplace')
+import brightcovePlayer
 
 thisPlugin = int(sys.argv[1])
 
@@ -99,13 +92,10 @@ def showShows(link):
 				helper.addDirectoryItem(showTitle, {"channel":thisChannel,"action":"showVideos","link":showLink}, showImg)
 	helper.endOfDirectory()
 
-def showShowsShow(link):
-	page = helper.load_page(urllib.unquote(link))
-
 def playVideo(link):
     page = helper.load_page(urllib.unquote(link))
     videoPlayer = re.compile("brightcove_mediaId: ([0-9]*),").search(page).group(1)
-    stream = play(videoPlayer)
+    stream = brightcovePlayer.play(const, playerID, videoPlayer, publisherID, playerKey)
     
     rtmpbase = stream[1][0:stream[1].find("&")]
     playpath = stream[1][stream[1].find("&") + 1:]
@@ -114,42 +104,6 @@ def playVideo(link):
     item = xbmcgui.ListItem(stream[0], path=finalurl)
     xbmcplugin.setResolvedUrl(thisPlugin, True, item)
 
-def build_amf_request(const, playerID, videoPlayer, publisherID):
-    env = remoting.Envelope(amfVersion=3)
-    env.bodies.append(
-        (
-            "/1",
-            remoting.Request(
-                target="com.brightcove.player.runtime.PlayerMediaFacade.findMediaById",
-                body=[const, playerID, videoPlayer, publisherID],
-                envelope=env
-            )
-        )
-    )
-    return env
-
-def get_clip_info(const, playerID, videoPlayer, publisherID):
-    conn = httplib.HTTPConnection("c.brightcove.com")
-    envelope = build_amf_request(const, playerID, videoPlayer, publisherID)
-    conn.request("POST", "/services/messagebroker/amf?playerKey=" + playerKey, str(remoting.encode(envelope).read()), {'content-type': 'application/x-amf'})
-    response = conn.getresponse().read()
-    response = remoting.decode(response).bodies[0][1].body
-    return response  
-
-def play(videoPlayer):
-    rtmpdata = get_clip_info(const, playerID, videoPlayer, publisherID)
-    streamName = ""
-    streamUrl = rtmpdata['FLVFullLengthURL'];
-    
-    for item in sorted(rtmpdata['renditions'], key=lambda item:item['frameHeight'], reverse=False):
-        streamHeight = item['frameHeight']
-        
-        if streamHeight <= height:
-            streamUrl = item['defaultURL']
-    
-    streamName = streamName + rtmpdata['displayName']
-    return [streamName, streamUrl];
-	
 params = helper.get_params()
 if len(params) == 1:
     mainPage()
@@ -160,8 +114,6 @@ else:
         showVideosSection(params['link'],params['section'])
     if params['action'] == "showShows":
         showShows(params['link'])
-    if params['action'] == "showShowsShow":
-        showShowsShow(params['link'])
     if params['action'] == "playVideo":
         playVideo(params['link'])
     else:
