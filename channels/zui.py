@@ -16,13 +16,13 @@ def mainPage():
     
     heroCats = re.compile("<ul id=\"hero_cats\">(.*?</ul><ul id=\"more_cats\">.*?)</ul>", re.DOTALL).search(page).group(1)
     
-    print heroCats
     items = re.compile("<a href=\"(/videos/category/(.*?))\" class=\".*?\"><span>(.*?)</span></a>").finditer(heroCats)
+    
+    helper.addDirectoryItem("All", {"channel":thisChannel, "action":"showCategory", "link":"/videos"})
     
     for category in items:
         catName = category.group(3)
         catLink = category.group(1)
-        #http://zui.com/assets/icons/cats/zui_tv_normal.png
         catImg = baseLink + "/assets/icons/cats/" + category.group(2).replace("+", "_") + "_normal.png"
         helper.addDirectoryItem(catName, {"channel":thisChannel, "action":"showCategory", "link":catLink}, catImg)
 
@@ -38,6 +38,14 @@ def showCategory(link):
         vidLink = video.group(1)
         vidImg = video.group(3)
         helper.addDirectoryItem(vidName, {"channel":thisChannel, "action":"playVideo", "link":vidLink}, vidImg, False)
+        
+    extractNextPage = re.compile("<li class=\"next\"><a href=\"(.*?)\" rel=\"next\">Next")
+    
+    nextPage = extractNextPage.search(page)
+    
+    if nextPage is not None:
+        helper.addDirectoryItem("Show more", {"channel":thisChannel, "action":"showCategory", "link":nextPage.group(1)})
+    
     helper.endOfDirectory()
 
 def playVideo(link):
