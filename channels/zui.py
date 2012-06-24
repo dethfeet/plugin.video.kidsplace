@@ -31,13 +31,15 @@ def mainPage():
 def showCategory(link):
     page = helper.load_page(baseLink+urllib.unquote(link))
 
-    extractVideos = re.compile("<div class=\"peepshow\">.*?<a href=\"(.*?)\">(.*?)</a>.*?<img.*?src=\"(.*?)\"")
+    extractVideos = re.compile("<div class=\"peepshow\">.*?<a href=\"(.*?)\">(.*?)</a>.*?<img.*?src=\"(.*?)\".*?<p>(.*?)</p>")
     
     for video in extractVideos.finditer(page):
         vidName = video.group(2)
         vidLink = video.group(1)
         vidImg = video.group(3)
-        helper.addDirectoryItem(vidName, {"channel":thisChannel, "action":"playVideo", "link":vidLink}, vidImg, False)
+        vidPlot = video.group(4)
+        parameters = {"channel":thisChannel, "action":"playVideo", "link":vidLink}
+        helper.addDirectoryItem(vidName, parameters, vidImg, False, plot=vidPlot)
         
     extractNextPage = re.compile("<li class=\"next\"><a href=\"(.*?)\" rel=\"next\">Next")
     
