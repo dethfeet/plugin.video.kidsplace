@@ -51,18 +51,18 @@ def removeHtmlSpecialChars(inputStr):
     
     return inputStr
 
-def addDirectoryItem(name, parameters={}, pic="", folder=True):
+def addDirectoryItem(name, parameters={}, pic="", folder=True, duration=None, plot=None, date=None, size=None, year=None):
     if not folder:
         li = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=pic)
         li.setProperty('IsPlayable', 'true')
-#		li.setInfo("video",{
-#            "size": link.size,
-#            "date": time.strftime("%d.%m.%Y",displayObject.date),
-#            "year": int(time.strftime("%Y",displayObject.date)),
-#            "title": title,
-#            "plot": transformHtmlCodes(displayObject.description),
-#            "duration": displayObject.duration
-#          }); 
+        li.setInfo("video",{
+            "size": size,
+            "date": date,
+            "year": year,
+            "title": name,
+            "plot": plot,
+            "duration": duration
+          }); 
     else:
         li = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=pic)
     url = sys.argv[0] + '?' + urllib.urlencode(parameters)
@@ -78,21 +78,32 @@ def setResolvedUrl(streamUrl):
 def extractMrss(feed):
     extractItem = re.compile("<item>.*?</item>",re.DOTALL)
     
-    extractInfo = re.compile("<title>(.*?)</title>.*?<media:content.*?url=\"(.*?)\".*?<media:thumbnail.*?url=\"(.*?)\"",re.DOTALL)
+    extractInfo = re.compile("<title>(.*?)</title>.*?(<media:content.*?url=\"(.*?)\".*?/>).*?<media:thumbnail.*?url=\"(.*?)\"",re.DOTALL)
     extractInfoPlayer = re.compile("<media:player url=\"(.*?)\"/>",re.DOTALL)
+    extractInfoContentDuration = re.compile("duration=\"(.*?)\"")
+    extractInfoDescription = re.compile("<description>(.*?)</description>",re.DOTALL)
     mediaItems = []
     for item in extractItem.finditer(feed):
         itemContent = item.group(0)
+        
         media = extractInfo.search(itemContent)
         mediaPlayerItem = extractInfoPlayer.search(itemContent)
+        mediaDurationItem = extractInfoContentDuration.search(media.group(2))
+        mediaDescriptionItem = extractInfoDescription.search(itemContent)
         
         mediaTitle = removeHtmlSpecialChars(media.group(1))
-        mediaUrl = media.group(2)
-        mediaThumb = media.group(3)
+        mediaUrl = media.group(3)
+        mediaThumb = media.group(4)
         mediaPlayer = ""
         if mediaPlayerItem is not None:
             mediaPlayer = mediaPlayerItem.group(1)
-        mediaItems.append({"title":mediaTitle, "img":mediaThumb, "url":mediaUrl, "player":mediaPlayer})
+        mediaDuration = ""
+        if mediaDurationItem is not None:
+            mediaDuration = str(int(mediaDurationItem.group(1))/60)
+        mediaDescription = ""
+        if mediaDescriptionItem is not None:
+            mediaDescription = mediaDescriptionItem.group(1)
+        mediaItems.append({"title":mediaTitle, "img":mediaThumb, "url":mediaUrl, "player":mediaPlayer, "duration":mediaDuration, "plot":mediaDescription})
     return mediaItems
 
 def get_params():
