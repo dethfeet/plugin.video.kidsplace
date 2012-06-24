@@ -13,6 +13,7 @@ channels = [
 ["hubworld.com","hubworld"],
 ["kidmango.com","kidmango"],
 ["nickjr.com","nickjr"],
+["storylineonline.net","storylineonline"],
 ["zui.com","zui"],
 ]
 
