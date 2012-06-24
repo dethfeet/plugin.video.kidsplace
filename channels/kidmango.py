@@ -28,7 +28,8 @@ def showVideos(feedUrl):
 	media = helper.extractMrss(feed)
 
    	for video in media:
-   		helper.addDirectoryItem(video['title'], {"channel":thisChannel,"action":"playVideo","link":video['url']}, video['img'], False)
+   		parameters = {"channel":thisChannel,"action":"playVideo","link":video['url']}
+   		helper.addDirectoryItem(video['title'], parameters, video['img'], False, duration=video['duration'], plot=video['plot'])
 	
 	#Next page
 	extractNextPage = re.compile("<atom:link rel=\"next\" href=\"(.*)\" />").search(feed)
