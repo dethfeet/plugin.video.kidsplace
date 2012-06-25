@@ -99,7 +99,11 @@ def extractMrss(feed):
             mediaPlayer = mediaPlayerItem.group(1)
         mediaDuration = ""
         if mediaDurationItem is not None:
-            mediaDuration = str(int(mediaDurationItem.group(1))/60)
+            mediaDurationValue = mediaDurationItem.group(1)
+            if mediaDurationValue.find(":"):
+                mediaDuration = str(mediaDurationValue)
+            else:
+                mediaDuration = str(int(mediaDurationValue)/60)
         mediaDescription = ""
         if mediaDescriptionItem is not None:
             mediaDescription = mediaDescriptionItem.group(1)
