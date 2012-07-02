@@ -51,7 +51,7 @@ def removeHtmlSpecialChars(inputStr):
     
     return inputStr
 
-def addDirectoryItem(name, parameters={}, pic="", folder=True, duration=None, plot=None, date=None, size=None, year=None):
+def addDirectoryItem(name, parameters={}, pic="", folder=True, duration='', plot='', date='', size=0, year=0):
     if not folder:
         li = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=pic)
         li.setProperty('IsPlayable', 'true')
@@ -125,5 +125,8 @@ def get_params():
             splitparams = pairsofparams[i].split('=')
             if (len(splitparams)) == 2:
                 param[splitparams[0]] = splitparams[1]
-    
     return param
+
+def removeTags(input):
+    p = re.compile(r'<.*?>')
+    return p.sub('', input)
