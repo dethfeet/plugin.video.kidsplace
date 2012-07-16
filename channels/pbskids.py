@@ -1,10 +1,10 @@
 #THX to conorbranagan for the playback code
 # -> https://github.com/conorbranagan/xbmc-plugins/blob/master/plugin.video.pbs_kids/addon.py
 
-import xbmc, xbmcgui, xbmcplugin
+import xbmcplugin
 import helper
 from xml.dom import minidom
-import urllib, re
+import urllib
 import urllib2, sys
 
 thisChannel = "pbskidsgo"
