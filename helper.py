@@ -9,21 +9,39 @@ import gzip
 
 thisPlugin = int(sys.argv[1])
 
-def load_page(url , proxy=False):
+class RTMPHandler(urllib2.BaseHandler):
+    
+    def __init__(self):
+        pass
+    
+    def rtmp_open(self, req):
+        url = req.get_selector()
+        return urllib.addinfourl(StringIO(''), req.headers, req.get_full_url())
+
+def load_page(url, proxy=False, getRedirect=False):
     print url
+    
     if proxy == True:
+        proxy = False
         proxy_address = xbmcplugin.getSetting(thisPlugin,'proxy_address')
         proxy_port = xbmcplugin.getSetting(thisPlugin,'proxy_port')
         if len(proxy_address):
+            proxy = True
             us_proxy = "http://"+proxy_address+":"+proxy_port
             print 'Using proxy: ' + us_proxy
             proxy_handler = urllib2.ProxyHandler({'http':us_proxy})
-            opener = urllib2.build_opener(proxy_handler)
-            urllib2.install_opener(opener)
+            opener = urllib2.build_opener(proxy_handler, RTMPHandler)
+    if not proxy:
+        opener = urllib2.build_opener(RTMPHandler)
     
+    urllib2.install_opener(opener)
+            
     req = urllib2.Request(url)
     req.add_header('Accept-encoding', 'gzip')
     response = urllib2.urlopen(req)
+    
+    if getRedirect:
+        return response.geturl()
     
     if response.info().get('Content-Encoding') == 'gzip':
         buf = StringIO( response.read())
