@@ -1,15 +1,9 @@
-#THX to conorbranagan for the playback code
-# -> https://github.com/conorbranagan/xbmc-plugins/blob/master/plugin.video.pbs_kids/addon.py
-
-import xbmcplugin
 import helper
 from xml.dom import minidom
 import urllib
-import urllib2, sys
+import re
 
-thisChannel = "pbskidsgo"
-
-thisPlugin = int(sys.argv[1])
+thisChannel = "pbskids"
 
 baseLink = ""
 baseLinkNav = ""
@@ -89,45 +83,20 @@ def videoPageXml(link, start, showName):
         helper.addDirectoryItem("Show more",parameters)
     helper.endOfDirectory()
 
-class PBSRedirectHandler(urllib2.HTTPRedirectHandler):
-    def http_error_302(self, req, fp, code, msg, headers):
-        raise Exception(headers['location'])
-
-    http_error_301 = http_error_303 = http_error_307 = http_error_302
-
 def playVideo(link):
-    proxy_address = xbmcplugin.getSetting(thisPlugin,'proxy_address')
-    proxy_port = xbmcplugin.getSetting(thisPlugin,'proxy_port')
+    streamUrl = helper.load_page(link,True, getRedirect=True)
     
-    print link
-
-    if len(proxy_address):
-        us_proxy = "http://"+proxy_address+":"+proxy_port
-        print 'Using proxy: ' + us_proxy
-        proxy_handler = urllib2.ProxyHandler({'http':us_proxy})
-        opener = urllib2.build_opener(proxy_handler, PBSRedirectHandler)
-        urllib2.install_opener(opener)
+    if not streamUrl == link:
+        streamUrl = streamUrl.replace("<break>"," playpath=MP4:")
     else:
-        opener = urllib2.build_opener(PBSRedirectHandler)
-        urllib2.install_opener(opener)
-    
-    streamUrl = ""
-    
-    try:
-        # some refs are a redirect to the correct video url and
-        # some refs return xml info about correct video url
-        response = urllib2.urlopen(link)
-        # only reach this point if no redirect
-        data = response.read()
-        response.close()
-        dom = minidom.parseString(data)
-        xmlnode = dom.getElementsByTagName('url')[0]
-        streamUrl = xmlnode.firstChild.nodeValue.replace('<break>', '')
-    except Exception, e:
-        streamUrl = str(e).replace('<break>', ' playpath=MP4:') # This is an odd way of doing this..
-
+        streamPage = helper.load_page(link,True)
+        extractUrl = re.compile("<url>(.*?)</url>")
+        streamUrl = extractUrl.search(streamPage).group(1)
+        streamUrl = streamUrl.replace("&lt;","<")
+        streamUrl = streamUrl.replace("&gt;",">")
+        streamUrl = streamUrl.replace("&amp;","&")
+        streamUrl = streamUrl.replace("<break>"," playpath=")
     helper.setResolvedUrl(streamUrl)
-
     
 params = helper.get_params()
 if len(params) == 1:
