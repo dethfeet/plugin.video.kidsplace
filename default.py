@@ -1,8 +1,10 @@
-import xbmcaddon
+import xbmcaddon, xbmcplugin
 import sys
 import os
 
 import helper
+
+thisPlugin = int(sys.argv[1])
 
 addon = xbmcaddon.Addon(id='plugin.video.kidsplace')
 addonpath = xbmc.translatePath( addon.getAddonInfo('path') )
@@ -22,8 +24,11 @@ channels = [
 
 def mainPage():
 	for channel in channels:
-		channelPic = os.path.join(addonpath,'resources','images',channel[1]+'.png')
-		helper.addDirectoryItem(channel[0],{"channel":channel[1]}, channelPic)
+		enabled = xbmcplugin.getSetting(thisPlugin,'channel_'+channel[1])
+		if enabled == "true":
+			print enabled
+			channelPic = os.path.join(addonpath,'resources','images',channel[1]+'.png')
+			helper.addDirectoryItem(channel[0],{"channel":channel[1]}, channelPic)
 	helper.endOfDirectory()
 
 if not sys.argv[2]:

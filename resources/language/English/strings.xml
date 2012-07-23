@@ -3,4 +3,6 @@
 	<string id="50000">Proxy</string>
 	<string id="50004">Address</string>
 	<string id="50005">Port</string>
+	
+	<string id="50006">Channels</string>
 </strings>
