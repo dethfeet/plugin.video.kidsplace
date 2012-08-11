@@ -10,7 +10,6 @@ addon = xbmcaddon.Addon(id='plugin.video.kidsplace')
 addonpath = xbmc.translatePath( addon.getAddonInfo('path') )
 
 channels = [
-["4kidstv.com","4kidstv"],
 ["cbc.ca/kidscbc","cbcca"],
 ["hubworld.com","hubworld"],
 ["kidmango.com","kidmango"],
