@@ -39,7 +39,7 @@ def showVideos(link):
             sectionLinkSection = sectionTitle
             if showMoreButton is not None:
                 sectionLink = baseLink + showMoreButton.group(1)
-                sectionLinkSection = ""
+                sectionLinkSection = "/"
             helper.addDirectoryItem(sectionTitle, {"channel":thisChannel, "action":"showVideosSection", "link":sectionLink, "section":sectionLinkSection}, "")
     
     helper.endOfDirectory()
@@ -54,7 +54,7 @@ def showVideosSection(link, section):
 
     sectionHtml = "";
     
-    if showSection != "":
+    if showSection != "/":
         extractSections = extractSection.finditer(page)
         for section in extractSections:
             sectionTitle = section.group(1)
@@ -90,7 +90,7 @@ def showShows(link):
 
 def playVideo(link):
     page = helper.load_page(urllib.unquote(link))
-    videoPlayer = re.compile("brightcove_mediaId: ([0-9]*),").search(page).group(1)
+    videoPlayer = re.compile("<input type=\"hidden\" name=\"asset-id\" value=\"([0-9]*)\" id=\"asset-id\" />").search(page).group(1)
     stream = brightcovePlayer.play(const, playerID, videoPlayer, publisherID, playerKey)
     
     rtmpbase = stream[1][0:stream[1].find("&")]
