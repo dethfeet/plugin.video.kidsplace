@@ -7,6 +7,8 @@ import urllib, urllib2
 from StringIO import StringIO
 import gzip
 
+urllib2.socket.setdefaulttimeout(30)
+
 thisPlugin = int(sys.argv[1])
 
 class RTMPHandler(urllib2.BaseHandler):
