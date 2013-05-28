@@ -31,10 +31,11 @@ def mainPage():
 def showCategory(link):
     page = helper.load_page(baseLink+urllib.unquote(link))
 
-    extractVideos = re.compile("<div class=\"peepshow\">.*?<a href=\"(.*?)\">(.*?)</a>.*?<img.*?src=\"(.*?)\".*?<p>(.*?)</p>")
+    extractVideos = re.compile("<div class=\"peepshow\">.*?<a href=\"(.*?)\">(.*?)</a>.*?<img.*?src=\"(.*?)\".*?<p>(.*?)</p>",re.DOTALL)
     
     for video in extractVideos.finditer(page):
         vidName = video.group(2)
+        vidName = helper.removeHtmlSpecialChars(vidName)
         vidLink = video.group(1)
         vidImg = video.group(3)
         vidPlot = video.group(4)
@@ -62,28 +63,17 @@ def playVideo(link):
         streamUrl = "plugin://plugin.video.youtube/?action=play_video&videoid=" + youTubeId 
         helper.setResolvedUrl(streamUrl)
     else:
-        const = "07e6acedf6c0f426a377e5b3ba077229e6e826f9"
-        publisherID = "1521649306001"
-    
-        extractVideo = re.compile("<param name=\"playerID\" value=\"([0-9]*)\".*?name=\"playerKey\" value=\"(.*?)\".*name=\"@videoPlayer\" value=\"([0-9]*)\"")
-    
-        video = extractVideo.search(page)
-        playerID = video.group(1)
-        playerKey = video.group(2)
-        videoPlayer = video.group(3)
-    
-        stream = brightcovePlayer.play(const, playerID, videoPlayer, publisherID, playerKey)
-    
-        vidStr = "?videoId="+videoPlayer+"&lineUpId=&pubId="+publisherID+"&playerId="+playerID+"&affiliateId="
-    
-        rtmpbase = stream[1][0:stream[1].find("&")]
-        conn = stream[1][stream[1].find("&") + 1:]
-        playpath = conn[0:conn.find("&")]+vidStr
-        app = rtmpbase[rtmpbase.find("/",7)+1:-1]+vidStr;
-    
-        finalurl = rtmpbase + ' playpath=' + playpath +" conn=B:0 conn=S:"+conn+" app="+app
-
-        helper.setResolvedUrl(finalurl)
+        #bitsontherun
+        extractVideoId = re.compile("<div id=\"container\" style=\"display: none;\"><script type=\"text/javascript\" src=\"(http://content.bitsontherun.com/players/.*?-.*?.js)\"></script></div>")
+        videoInfo = extractVideoId.search(page)
+        if videoInfo is not None:
+            jsURL = videoInfo.group(1)            
+            bitsontherunJS = helper.load_page(jsURL)
+            extractVideoUrl = re.compile("botrObject.swf\(\n\t\".*?\",\n\t\".*?\",\n\t\".*?\",\n\t\"(.*?)\",")
+            videoUrlInfo = extractVideoUrl.search(bitsontherunJS)
+            videoUrl = videoUrlInfo.group(1);
+            #videoUrl = videoUrl.replace("conversions/","http://v.jwpcdn.com/")
+            helper.setResolvedUrl(videoUrl)
 
 params = helper.get_params()
 if len(params) == 1:
