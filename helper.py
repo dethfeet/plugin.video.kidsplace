@@ -62,12 +62,14 @@ def removeHtmlSpecialChars(inputStr):
     inputStr = inputStr.replace("&#8217;", "'")#\x92
     inputStr = inputStr.replace("&#8220;","\"")#\x92
     inputStr = inputStr.replace("&#8221;","\"")#\x92
+    inputStr = inputStr.replace("&quot;","\"")#\x92
     inputStr = inputStr.replace("&#8230;", "'")
    
     inputStr = inputStr.replace("&#038;", chr(38))# &
     inputStr = inputStr.replace("&#039;", chr(39))# '
     inputStr = inputStr.replace("&apos;", "'")# '
     inputStr = inputStr.replace("&amp;", "&")# '
+    inputStr = inputStr.replace("&#x27;", "'")# '
     
     return inputStr
 
